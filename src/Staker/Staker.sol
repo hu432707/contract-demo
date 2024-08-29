@@ -32,9 +32,9 @@ contract Staker is ReentrancyGuard {
     error NotStaked(uint256 tokenID);
     error NotNFTOwner(uint256 tokenID);
 
-    event Stake(uint256 indexed tokenID, uint256 stakeTime);
-    event UnStake(uint256 indexed tokenID);
-    event Claim(uint256 indexed tokenID, uint256 rewardAmount);
+    event Stake(uint256 indexed tokenID, address account, uint256 stakeTime);
+    event UnStake(uint256 indexed tokenID, address account);
+    event Claim(uint256 indexed tokenID, address account, uint256 rewardAmount);
 
     constructor(
         address stakeNFT_,
@@ -82,7 +82,7 @@ contract Staker is ReentrancyGuard {
         }
         _stakes[_tokenID] = StakeItem(_account, block.timestamp, 0);
 
-        emit Stake(_tokenID, block.timestamp);
+        emit Stake(_tokenID, _account, block.timestamp);
     }
 
     function _unstake(
@@ -95,7 +95,7 @@ contract Staker is ReentrancyGuard {
 
         IERC721(_stakeNFT).transferFrom(address(this), _account, _tokenID);
 
-        emit UnStake(_tokenID);
+        emit UnStake(_tokenID, _account);
     }
 
     function _claimRewards(address _account, uint256 _tokenID) private {
@@ -118,7 +118,7 @@ contract Staker is ReentrancyGuard {
 
         IERC20(rewardToken).safeTransfer(_account, claimableAmount);
 
-        emit Claim(_tokenID, claimableAmount);
+        emit Claim(_tokenID, _account, claimableAmount);
     }
 
     function _claimableReward(
