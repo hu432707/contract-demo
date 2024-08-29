@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "ethers": "^6.13.2",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
