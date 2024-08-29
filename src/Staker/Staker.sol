@@ -28,7 +28,6 @@ contract Staker is ReentrancyGuard {
 
     mapping(uint256 => StakeItem) private _stakes;
 
-    error AlreadyStaked(uint256 tokenID);
     error NotStaked(uint256 tokenID);
     error NotNFTOwner(uint256 tokenID);
 
@@ -75,11 +74,6 @@ contract Staker is ReentrancyGuard {
 
         IERC721(_stakeNFT).transferFrom(_account, address(this), _tokenID);
 
-        StakeItem memory stakeItem = _stakes[_tokenID];
-
-        if (stakeItem.account != address(0)) {
-            revert AlreadyStaked(_tokenID);
-        }
         _stakes[_tokenID] = StakeItem(_account, block.timestamp, 0);
 
         emit Stake(_tokenID, _account, block.timestamp);
