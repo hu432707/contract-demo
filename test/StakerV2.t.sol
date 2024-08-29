@@ -43,6 +43,15 @@ contract StakerTest is Test {
         vm.prank(user1);
         staker.stake(1);
         assertEq(nft.ownerOf(1), address(staker));
+
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                StakerV2.NotNFTOwner.selector,
+                1
+            )
+        );
+        staker.stake(1);
     }
 
     function test_claim() public {
@@ -63,16 +72,45 @@ contract StakerTest is Test {
         assertEq(token.balanceOf(user1), 208895803106508006605324335000);
     }
 
-    function test_unstake() public {
+    function test_unstake_and_restake() public {
         vm.prank(user1);
         nft.setApprovalForAll(address(staker), true);
         vm.prank(user1);
         staker.stake(1);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                StakerV2.NotNFTOwner.selector,
+                1
+            )
+        );
+        staker.unstake(1);
+
         vm.warp(vm.getBlockTimestamp() + 1 days);
         vm.prank(user1);
         staker.unstake(1);
         assertEq(nft.ownerOf(1), user1);
         
         assertEq(token.balanceOf(user1), 100e18);
+
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                StakerV2.NotStaked.selector,
+                1
+            )
+        );
+        staker.unstake(1);
+        
+        vm.prank(user1);
+        staker.stake(1);
+        assertEq(nft.ownerOf(1), address(staker));
+
+        vm.warp(vm.getBlockTimestamp() + 2 days);
+        vm.prank(user1);
+        staker.unstake(1);
+        assertEq(nft.ownerOf(1), user1);
+        
+        assertEq(token.balanceOf(user1), 310e18);
     }
 }

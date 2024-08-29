@@ -43,6 +43,15 @@ contract StakerTest is Test {
         vm.prank(user1);
         staker.stake(1);
         assertEq(nft.ownerOf(1), address(staker));
+
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Staker.NotNFTOwner.selector,
+                1
+            )
+        );
+        staker.stake(1);
     }
 
     function test_claim() public {
@@ -68,6 +77,15 @@ contract StakerTest is Test {
         nft.setApprovalForAll(address(staker), true);
         vm.prank(user1);
         staker.stake(1);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Staker.NotNFTOwner.selector,
+                1
+            )
+        );
+        staker.unstake(1);
+
         vm.warp(vm.getBlockTimestamp() + 1 days);
         vm.prank(user1);
         staker.unstake(1);
@@ -75,6 +93,14 @@ contract StakerTest is Test {
         
         assertEq(token.balanceOf(user1), 100e18);
 
+        vm.prank(user1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Staker.NotStaked.selector,
+                1
+            )
+        );
+        staker.unstake(1);
         
         vm.prank(user1);
         staker.stake(1);
