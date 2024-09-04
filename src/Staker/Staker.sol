@@ -140,14 +140,7 @@ contract Staker is ReentrancyGuard {
 
     function stakeInfo(
         uint256 tokenID
-    )
-        external
-        view
-        returns (address account, uint256 stakeTime, uint256 claimedAmount)
-    {
-        StakeItem memory stakeItem = _stakes[tokenID];
-        account = stakeItem.account;
-        stakeTime = stakeItem.stakeTime;
-        claimedAmount = stakeItem.claimedAmount;
+    ) external view returns (StakeItem memory) {
+        return _stakes[tokenID];
     }
 }
